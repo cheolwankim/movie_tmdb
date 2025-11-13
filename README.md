@@ -1,6 +1,7 @@
 # TMDB Movie Browser
 
 Vite + React + TypeScript로 만든 TMDB 영화 검색 / 무한 스크롤 데모입니다.
+TMDB API 를 사용했습니다.
 
 ## Scripts
 
