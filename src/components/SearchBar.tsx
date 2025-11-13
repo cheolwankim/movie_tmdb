@@ -21,7 +21,7 @@ export default function SearchBar({ value, onDebouncedChange, delay = 400 }: Pro
       placeholder="영화 검색..."
       value={inner}
       onChange={(e) => setInner(e.target.value)}
-      className="w-full md:w-96 rounded-lg border px-3 py-2 outline-none focus:ring focus:ring-blue-200"
+      className="w-full md:w-96 rounded-lg border px-3 py-2 outline-none focus:ring focus:ring-blue-200 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400"
     />
   );
 }
