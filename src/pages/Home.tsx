@@ -16,6 +16,13 @@ export default function Home() {
     minRating: undefined,
   });
 
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return false;
+  });
+
   const {
     data,
     fetchNextPage,
@@ -33,46 +40,70 @@ export default function Home() {
     setQuery(next);
   }, []);
 
+  const toggleDarkMode = useCallback(() => {
+    const html = document.documentElement;
+    if (html.classList.contains("dark")) {
+      html.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setIsDark(false);
+    } else {
+      html.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDark(true);
+    }
+  }, []);
+
   return (
-    <main className="max-w-7xl mx-auto p-4">
-      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
-        <h1 className="text-2xl font-bold">TMDB Browser</h1>
-        <SearchBar
-          value={query.q ?? ""}
-          onDebouncedChange={onDebouncedChange}
-        />
-      </header>
-
-      <section className="mb-4">
-        <FilterBar query={query} onChange={handleFilterChange} />
-      </section>
-
-      {isLoading && (
-        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {Array.from({ length: 18 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-200 rounded-xl aspect-[2/3]"
+    <main className="min-h-screen bg-white dark:bg-slate-900 transition-colors">
+      <div className="max-w-7xl mx-auto p-4">
+        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50">TMDB Browser</h1>
+          <div className="flex gap-2 items-center">
+            <SearchBar
+              value={query.q ?? ""}
+              onDebouncedChange={onDebouncedChange}
             />
-          ))}
-        </div>
-      )}
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+              title="Toggle dark mode"
+            >
+              {isDark ? "☀️" : "🌙"}
+            </button>
+          </div>
+        </header>
 
-      {isError && (
-        <p className="text-red-600">
-          데이터를 불러오는 중 오류가 발생했습니다.
-        </p>
-      )}
+        <section className="mb-4">
+          <FilterBar query={query} onChange={handleFilterChange} />
+        </section>
 
-      {!isLoading && !isError && (
-        <MovieGrid<Movie>
-          pages={data?.pages}
-          isFetchingNextPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-          onLoadMore={() => fetchNextPage()}
-          renderItem={(m) => <MovieCard movie={m} />}
-        />
-      )}
+        {isLoading && (
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div
+                key={i}
+                className="animate-pulse bg-gray-200 dark:bg-slate-700 rounded-xl aspect-[2/3]"
+              />
+            ))}
+          </div>
+        )}
+
+        {isError && (
+          <p className="text-red-600 dark:text-red-400">
+            데이터를 불러오는 중 오류가 발생했습니다.
+          </p>
+        )}
+
+        {!isLoading && !isError && (
+          <MovieGrid<Movie>
+            pages={data?.pages}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+            onLoadMore={() => fetchNextPage()}
+            renderItem={(m) => <MovieCard movie={m} />}
+          />
+        )}
+      </div>
     </main>
   );
 }
